@@ -1,1 +1,1239 @@
-#
+// Buławka, Nazarij, Hector A. Orengo, Felipe Lumbreras Ruiz, Iban Berganzo-Besga and Ekta Gupta. n.d. 
+// ‘Leveraging Big Multitemporal Multisource Satellite Data and Artificial Intelligence for the Detection of Complex and Invisible Features - the Case of Extensive Irrigation Mapping’. 
+// Sent to publication
+// The following is a modification of the original code to accompany the paper: 
+// Orengo, H.A. and Petrie, C.A. 2017. Large-scale, multi-temporal remote sensing of palaeo-river networks: a case study from northwest India and its implications for the Indus Civilisation. Remote Sensing, 9(7): 735; doi: 10.3390/rs9070735
+//Garcia-Molsosa, A. Orengo H.A. Petrie C.A. 'Reconstructing long-term settlement histories on complex alluvial floodplains: integrating historical map analysis and remote-sensing in the archaeological analysis of the landscape of the Indus River Basin'
+//PI:: N. Bulawka //project:: UnderTheSands //Grant agreement ID:: 101062705  //Funded under:: Marie Skłodowska-Curie Actions (MSCA) //Coordinated by:: Institut Català d'Arqueologia Clàssica
+//                ------------- ooo -------------
+
+var scale = 90;
+//
+// Select the area of study
+var ExpressPrompt = prompt("SELECT AOI: traingeometry, CFE_a",'CFE_a');
+var CFE_a = ee.Geometry.Polygon([ [ [ 44.715842716091053, 32.597346378 ], [ 44.715842716091053, 32.059655758137929 ], [ 44.40228719000001, 32.059655758137929 ], [ 44.40228719000001, 32.597346378 ], [ 44.715842716091053, 32.597346378 ] ] ]);
+var CFE_b = ee.Geometry.Polygon([ [ [ 44.715842716091053, 32.059655758137929 ], [ 44.715842716091053, 32.597346378 ], [ 45.029398242182097, 32.597346378 ], [ 45.029398242182097, 32.059655758137929 ], [ 44.715842716091053, 32.059655758137929 ] ] ]);
+var CFE_c = ee.Geometry.Polygon([ [ [ 45.029398242182097, 32.059655758137929 ], [ 45.029398242182097, 32.597346378 ], [ 45.342953768273141, 32.597346378 ], [ 45.342953768273141, 32.059655758137929 ], [ 45.029398242182097, 32.059655758137929 ] ] ]);
+var CFE_d = ee.Geometry.Polygon([ [ [ 44.715842716091053, 32.059655758137929 ], [ 44.715842716091053, 31.521965138275853 ], [ 44.40228719000001, 31.521965138275853 ], [ 44.40228719000001, 32.059655758137929 ], [ 44.715842716091053, 32.059655758137929 ] ] ]);
+var CFE_e = ee.Geometry.Polygon([ [ [ 44.715842716091053, 31.521965138275853 ], [ 44.715842716091053, 32.059655758137929 ], [ 45.029398242182097, 32.059655758137929 ], [ 45.029398242182097, 31.521965138275853 ], [ 44.715842716091053, 31.521965138275853 ] ] ]);
+var CFE_f = ee.Geometry.Polygon([ [ [ 45.029398242182097, 31.521965138275856 ], [ 45.029398242182097, 32.059655758137929 ], [ 45.342953768273141, 32.059655758137929 ], [ 45.342953768273141, 31.521965138275856 ], [ 45.029398242182097, 31.521965138275856 ] ] ]);
+var CFE_grid_1 = ee.Geometry.Polygon( [ [ [ 44.767914989348291, 32.75 ], [ 44.767914989348291, 32.232085010651709 ], [ 44.25, 32.232085010651709 ], [ 44.25, 32.75 ], [ 44.767914989348291, 32.75 ] ] ]);
+var CFE_grid_2 = ee.Geometry.Polygon( [ [ [ 45.267914989348291, 32.75 ], [ 45.267914989348291, 32.232085010651709 ], [ 44.75, 32.232085010651709 ], [ 44.75, 32.75 ], [ 45.267914989348291, 32.75 ] ] ] );
+var CFE_grid_3 = ee.Geometry.Polygon( [ [ [ 45.767914989348291, 32.75 ], [ 45.767914989348291, 32.232085010651709 ], [ 45.25, 32.232085010651709 ], [ 45.25, 32.75 ], [ 45.767914989348291, 32.75 ] ] ] );
+var CFE_grid_4 = ee.Geometry.Polygon([ [ [ 44.767914989348291, 32.25 ], [ 44.767914989348291, 31.732085010651709 ], [ 44.25, 31.732085010651709 ], [ 44.25, 32.25 ], [ 44.767914989348291, 32.25 ] ] ] );
+var CFE_grid_5 = ee.Geometry.Polygon( [ [ [ 45.267914989348291, 32.25 ], [ 45.267914989348291, 31.732085010651709 ], [ 44.75, 31.732085010651709 ], [ 44.75, 32.25 ], [ 45.267914989348291, 32.25 ] ] ] );
+var CFE_grid_6 = ee.Geometry.Polygon( [ [ [ 45.767914989348291, 32.25 ], [ 45.767914989348291, 31.732085010651709 ], [ 45.25, 31.732085010651709 ], [ 45.25, 32.25 ], [ 45.767914989348291, 32.25 ] ] ]);
+var CFE_grid_7 = ee.Geometry.Polygon([ [ [ 44.767914989348291, 31.75 ], [ 44.767914989348291, 31.232085010651709 ], [ 44.25, 31.232085010651709 ], [ 44.25, 31.75 ], [ 44.767914989348291, 31.75 ] ] ] );
+var CFE_grid_8 = ee.Geometry.Polygon([ [ [ 45.267914989348291, 31.75 ], [ 45.267914989348291, 31.232085010651709 ], [ 44.75, 31.232085010651709 ], [ 44.75, 31.75 ], [ 45.267914989348291, 31.75 ] ] ] );
+var CFE_grid_9 = ee.Geometry.Polygon( [ [ [ 45.767914989348291, 31.75 ], [ 45.767914989348291, 31.232085010651709 ], [ 45.25, 31.232085010651709 ], [ 45.25, 31.75 ], [ 45.767914989348291, 31.75 ] ] ]);
+
+if (ExpressPrompt == 'CFE_a') {var geometry_xprt = CFE_a; var AOI = 'CFE_a'; var Lon = 44.562; var Lat =  32.1627; var zoom = 11; var TANDEM = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_b') {var geometry_xprt = CFE_b; var AOI = 'CFE_b'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_c') {var geometry_xprt = CFE_c; var AOI = 'CFE_c'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_d') {var geometry_xprt = CFE_d; var AOI = 'CFE_d'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_e') {var geometry_xprt = CFE_e; var AOI = 'CFE_e'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_f') {var geometry_xprt = CFE_f; var AOI = 'CFE_f'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_grid_1') {var geometry_xprt = CFE_grid_1; var AOI = 'CFE_grid_1'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM30 = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_grid_2') {var geometry_xprt = CFE_grid_2; var AOI = 'CFE_grid_2'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM30 = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_grid_3') {var geometry_xprt = CFE_grid_3; var AOI = 'CFE_grid_3'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM30 = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_grid_4') {var geometry_xprt = CFE_grid_4; var AOI = 'CFE_grid_4'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM30 = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_grid_5') {var geometry_xprt = CFE_grid_5; var AOI = 'CFE_grid_5'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM30 = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_grid_6') {var geometry_xprt = CFE_grid_6; var AOI = 'CFE_grid_6'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM30 = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_grid_7') {var geometry_xprt = CFE_grid_7; var AOI = 'CFE_grid_7'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM30 = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_grid_8') {var geometry_xprt = CFE_grid_8; var AOI = 'CFE_grid_8'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM30 = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+if (ExpressPrompt == 'CFE_grid_9') {var geometry_xprt = CFE_grid_9; var AOI = 'CFE_grid_9'; var Lon = 44.7659; var Lat =  31.8987; var zoom = 11; var TANDEM30 = ee.Image("projects/ee-nazarbulawka/assets/CFE1_TDM1_EDEM_10_W84");}
+//////////////////////////////////
+/// Filter date
+var filterImStart = '1900-01-01'
+var filterImEnd =  '2022-09-01'
+//////////////////////////////////
+// Sepcify the pecific modern enviromental conditions for dry and wet season
+var ExpressPrompt0 = prompt("SELECT version of seasonal parametres",'3');
+if (ExpressPrompt0 == '1') {var version = 'v1'; var wetstart1 = 1; var wetfinish1 = 120; var wetstart2 = 181; wetfinish2 = 240; var drystart1 = 121; var dryfinish1 = 180; var drystart2 = 241; var dryfinish2 = 360; }
+if (ExpressPrompt0 == '2') {var version = 'v2'; var wetstart1 = 1; wetfinish1 = 150; var wetstart2 = 297; var wetfinish2 = 365; var drystart1 = 151; var dryfinish1 = 296; var drystart2 = 251; var dryfinish2 = 296; }
+if (ExpressPrompt0 == '3') {var version = 'v3'; var wetstart1 = 1; wetfinish1 = 165; var wetstart2 = 288; var wetfinish2 = 365; var drystart1 = 166; var dryfinish1 = 287; var drystart2 = 166; var dryfinish2 = 287; }
+if (ExpressPrompt0 == '4') {var version = 'v4'; var wetstart1 = 288; var wetfinish1 = 365; var wetstart2 = 288; var wetfinish2 = 365; var drystart1 = 166; var dryfinish1 = 287; var drystart2 = 166; var dryfinish2 = 287; }
+if (ExpressPrompt0 == '5') {var version = 'v5'; var wetstart1 = 1; var wetfinish1 = 165; var wetstart2 = 1; var wetfinish2 = 165; var drystart1 = 166; var dryfinish1 = 287; var drystart2 = 166; var dryfinish2 = 287; }
+//////////////////////////////////
+// Geometry
+Map.setCenter(Lon, Lat, zoom);
+// Specify the geometry for MSRM and RS layers
+var geometry = geometry_xprt.buffer({'distance': 1500});
+// Specify the starting date for filtering the images
+//////////////////////////////////
+//////////////////////////////////
+// Functions
+//////////////////////////////////
+// Set all the available Landsat 5 atmospherically corrected surface reflectance reflectance images as a variable
+var cloudMask457_C2 = function(image) {
+  var dilatedCloud = (1 << 1)
+  var cloud = (1 << 3)
+  var cloudShadow = (1 << 4)
+  var qa = image.select('QA_PIXEL');
+  var mask = qa.bitwiseAnd(dilatedCloud)
+    .and(qa.bitwiseAnd(cloud))
+    .or(qa.bitwiseAnd(cloudShadow))
+  return image.updateMask(mask.not());
+}
+
+var dataset = ee.ImageCollection("LANDSAT/LT05/C02/T1_L2")
+                  .map(cloudMask457_C2);// Applies scaling factors.
+function applyScaleFactors(image) {
+  var opticalBands = image.select('SR_B.').multiply(0.0000275).add(-0.2);
+  var thermalBand = image.select('ST_B6').multiply(0.00341802).add(149.0);
+  return image.addBands(opticalBands, null, true)
+              .addBands(thermalBand, null, true);
+}
+
+var L5 = dataset.map(applyScaleFactors);
+//////////////////////////////////
+//Rename L5 bands
+//////////////////////////////////
+var selectedL5 = L5.map(function(image) {
+  return image.select(
+    ['SR_B1', 'SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'ST_B6', 'SR_B7']
+  ).rename(
+    ['L5_B1', 'L5_B2', 'L5_B3', 'L5_B4', 'L5_B5', 'L5_B6', 'L5_B7']
+  );
+});
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                ------------- ooo -------------
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Dry L5 composite 
+/// L5 EVI Dry
+var L5Dry1 = selectedL5.filter(ee.Filter.dayOfYear(drystart1,dryfinish1));
+var L5Dry2 = selectedL5.filter(ee.Filter.dayOfYear(drystart2,dryfinish2));
+var L5Dry_col =  ee.ImageCollection(L5Dry1.merge(L5Dry2)).filterBounds(geometry);
+var L5Dry = L5Dry_col.mean();
+print('LANDSAT 5 images during Dry months:', L5Dry_col)
+// 
+var visualization = {
+  bands: ['L5_B3', 'L5_B2', 'L5_B1'],
+  min: 0.0,
+  max: 0.3,
+};
+
+Map.addLayer(selectedL5.median().clip(geometry), visualization, 'True Color (321)');
+//
+//
+// Calculations for specific indeces
+
+// SMTVI - Seasonal Multi-Temporal Vegetation Indices (SMTVI) using EVI
+// Orengo, Hector A., and Cameron A. Petrie. 2017. ‘Large-Scale, Multi-Temporal Remote Sensing of Palaeo-River Networks: A Case Study from Northwest India and Its Implications for the Indus Civilisation’. Remote Sensing 9 (7): 735 (1-20). https://doi.org/10.3390/rs9070735.
+// Enhanced Vegetation Index  (abbrv. EVI)
+// General formula: 2.5 * (NIR - RED) / ((NIR + 6*RED - 7.5*BLUE) + 1)
+// URL https://www.indexdatabase.de/db/si-single.php?sensor_id=96&rsindex_id=16 
+// https://custom-scripts.sentinel-hub.com/custom-scripts/sentinel-2/NBR22/script.js
+
+var SMTVI = 'float (2.5 * (b("L5_B4") - b("L5_B3")) / ((b("L5_B4") + 6.0 * b("L5_B3") - 7.5 * b("L5_B1")) + 1.0))';
+
+
+// L5_EVI_dry
+var L5_EVI_dry = L5Dry.expression(
+    'float (2.5 * (b("L5_B4") - b("L5_B3")) / ((b("L5_B4") + 6.0 * b("L5_B3") - 7.5 * b("L5_B1")) + 1.0))').rename('L5_EVI_dry');
+
+// Seasonal Multitemporal Composite
+//L5 SMTVI
+var L5_JanFeb = selectedL5.filter(ee.Filter.dayOfYear(1,60))
+    .median();
+var indexL5_SMTVI_JanFeb = L5_JanFeb.expression(SMTVI).rename('L5_SMTVI_JanFeb');
+//print('indexL5_SMTVI_JanFeb', indexL5_SMTVI_JanFeb);
+// 1 L5_MarApr
+var L5_MarApr = selectedL5.filter(ee.Filter.dayOfYear(61,120))
+    .median();
+var indexL5_SMTVI_MarApr = L5_MarApr.expression(SMTVI).rename('L5_SMTVI_MarApr');
+//print('indexL5_SMTVI_MarApr', indexL5_SMTVI_MarApr);
+
+//2 L5_MayJun    
+var L5_MayJun = selectedL5.filter(ee.Filter.dayOfYear(121,180))
+    .median();
+var indexL5_SMTVI_MayJun = L5_MayJun.expression(SMTVI).rename('L5_SMTVI_MayJun');
+//print('indexL5_SMTVI_MayJun', indexL5_SMTVI_MayJun);
+
+//3 L5_JulAug    
+var L5_JulAug = selectedL5.filter(ee.Filter.dayOfYear(181,240))
+    .median();
+var indexL5_SMTVI_JulAug = L5_JulAug.expression(SMTVI).rename('L5_SMTVI_JulAug');
+//print('indexL5_SMTVI_JulAug', indexL5_SMTVI_JulAug);
+
+//4 L5_SepOct   
+var L5_SepOct = selectedL5.filter(ee.Filter.dayOfYear(241,300))
+    .median();
+
+var indexL5_SMTVI_SepOct = L5_SepOct.expression(SMTVI).rename('L5_SMTVI_SepOct');
+//print('indexL5_SMTVI_SepOct', indexL5_SMTVI_SepOct);
+
+//5 L5_NovDec
+var L5_NovDec = selectedL5.filter(ee.Filter.dayOfYear(301,360))
+    .median();
+var indexL5_SMTVI_NovDec = L5_NovDec.expression(SMTVI).rename('L5_SMTVI_NovDec');
+//print('indexL5_SMTVI_NovDec', indexL5_SMTVI_NovDec);
+
+// Create a composite image with all the two-month average EVI composites and clip the area of analysis
+// according to your AOI (the AOI is defined by the geometry variable, which can be created/modified using
+// the map window below)
+//print('step 3', indexL5_SMTVI_NovDec);
+var L5_SMTVI_composite = ee.Image([indexL5_SMTVI_JanFeb, indexL5_SMTVI_MarApr, indexL5_SMTVI_MayJun, indexL5_SMTVI_JulAug, indexL5_SMTVI_SepOct, indexL5_SMTVI_NovDec])
+    .clip(geometry);
+
+// L5_SMTVI_std - standard deviation of L5_SMTVI_composite data
+var L5_SMTVI_std = L5_SMTVI_composite.reduce(ee.Reducer.stdDev()).rename('L5_SMTVI_std');
+
+
+// Add the newly created layer to the map window. In this case we have created a RGB composite joining
+// the bi-month EVI average values from July-August (R), March-April (G) and January-February (B) 
+// Map.addLayer(L5_SMTVI_composite, {bands: ["L5_SMTVI_JulAug","L5_SMTVI_MarApr","L5_SMTVI_JanFeb"], min: -2, max: 2}, AOI+" SMTVI Seasonal Composite");
+
+// Export the Expression image (with all bi-month EVI averages) to your Google drive
+//Export.image.toDrive({
+//  image: L5_SMTVI_composite,
+//  description: AOI+"_L5_SMTVI_Seasonal_Composite",
+//  scale: 30,
+//  maxPixels: 1e9,
+//  region: geometry
+//});
+
+
+//    ----oo PCA of seasonal changes withinh SMTVI oo-----
+
+// Get some information about the input to be used later.
+var scale = 10;
+var bandNames = L5_SMTVI_composite.bandNames();
+
+// Mean center the data to enable a faster covariance reducer
+// and an SD stretch of the principal components.
+var meanDict = L5_SMTVI_composite.reduceRegion({
+    reducer: ee.Reducer.mean(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+});
+var means = ee.Image.constant(meanDict.values(bandNames));
+var centered = L5_SMTVI_composite.subtract(means);
+
+// This helper function returns a list of new band names.
+var getNewBandNames = function(prefix) {
+  var seq = ee.List.sequence(1, bandNames.length());
+  return seq.map(function(b) {
+    return ee.String(prefix).cat(ee.Number(b).int());
+  });
+};
+
+// This function accepts mean centered imagery, a scale and
+// a region in which to perform the analysis.  It returns the
+// Principal Components (PC) in the region as a new image.
+var getPrincipalComponents = function(centered, scale, geometry) {
+  // Collapse the bands of the image into a 1D array per pixel.
+  var arrays = centered.toArray();
+
+  // Compute the covariance of the bands within the region.
+  var covar = arrays.reduceRegion({
+    reducer: ee.Reducer.centeredCovariance(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+  });
+
+  // Get the 'array' covariance result and cast to an array.
+  // This represents the band-to-band covariance within the region.
+  var covarArray = ee.Array(covar.get('array'));
+
+  // Perform an eigen analysis and slice apart the values and vectors.
+  var eigens = covarArray.eigen();
+
+  // This is a P-length vector of Eigenvalues.
+  var eigenValues = eigens.slice(1, 0, 1);
+  // This is a PxP matrix with eigenvectors in rows.
+  var eigenVectors = eigens.slice(1, 1);
+
+  // Convert the array image to 2D arrays for matrix computations.
+  var arrayImage = arrays.toArray(1);
+
+  // Left multiply the image array by the matrix of eigenvectors.
+  var principalComponents = ee.Image(eigenVectors).matrixMultiply(arrayImage);
+
+  // Turn the square roots of the Eigenvalues into a P-band image.
+  var sdImage = ee.Image(eigenValues.sqrt())
+    .arrayProject([0]).arrayFlatten([getNewBandNames('sd')]);
+
+  // Turn the PCs into a P-band image, normalized by SD.
+  return principalComponents
+    // Throw out an an unneeded dimension, [[]] -> [].
+    .arrayProject([0])
+    // Make the one band array image a multi-band image, [] -> image.
+    .arrayFlatten([getNewBandNames('L5_SMTVI_pc')])
+    // Normalize the PCs by their SDs.
+    .divide(sdImage);
+};
+
+// Get the PCs at the specified scale and in the specified region
+var SMTVI_seasonal_changes_PCA = getPrincipalComponents(centered, scale, geometry);
+
+// Display a composite with PCs 2,4,1 for visualisation
+// Please change the visualization paramenters to combine different bands
+// and/or reproduce the band combinations of the paper's figures
+// NOTE! The exported image incorporates all Principal Components
+Map.addLayer(SMTVI_seasonal_changes_PCA,{},'L5_pca_SMTVI');
+
+//                ------------- ooo -------------
+// Normalized Difference Moisture Index (NDMI)
+// Jin, Suming, and Steven A. Sader. 2005. ‘Comparison of Time Series Tasseled Cap Wetness and the Normalized Difference Moisture Index in Detecting Forest Disturbances’. Remote Sensing of Environment 94 (3): 364–72. https://doi.org/10.1016/j.rse.2004.10.012.
+///////////////////////////
+//print('LANDSAT 5 images used in the calculation', selectedL5);
+var L5_NDMI = 'float ((b("L5_B4") - b("L5_B5")) / (b("L5_B4") + b("L5_B5")))';
+
+//print('LANDSAT 5 images used in the calculation', selectedL5);
+
+var L5_JanFeb = selectedL5.filter(ee.Filter.dayOfYear(1,60))
+    .median();
+var indexL5_NDMI_JanFeb = L5_JanFeb.expression(L5_NDMI).rename('NDMI_JanFeb');
+//print('indexL5_NDMI_JanFeb', indexL5_NDMI_JanFeb);
+// 1 L5_MarApr
+var L5_MarApr = selectedL5.filter(ee.Filter.dayOfYear(61,120))
+    .median();
+var indexL5_NDMI_MarApr = L5_MarApr.expression(L5_NDMI).rename('NDMI_MarApr');
+//print('indexL5_NDMI_MarApr', indexL5_NDMI_MarApr);
+
+//2 L5_MayJun    
+var L5_MayJun = selectedL5.filter(ee.Filter.dayOfYear(121,180))
+    .median();
+var indexL5_NDMI_MayJun = L5_MayJun.expression(L5_NDMI).rename('NDMI_MayJun');
+//print('indexL5_NDMI_MayJun', indexL5_NDMI_MayJun);
+
+//3 L5_JulAug    
+var L5_JulAug = selectedL5.filter(ee.Filter.dayOfYear(181,240))
+    .median();
+var indexL5_NDMI_JulAug = L5_JulAug.expression(L5_NDMI).rename('NDMI_JulAug');
+//print('indexL5_NDMI_JulAug', indexL5_NDMI_JulAug);
+
+//4 L5_SepOct   
+var L5_SepOct = selectedL5.filter(ee.Filter.dayOfYear(241,300))
+    .median();
+
+var indexL5_NDMI_SepOct = L5_SepOct.expression(L5_NDMI).rename('NDMI_SepOct');
+//print('indexL5_NDMI_SepOct', indexL5_NDMI_SepOct);
+
+//5 L5_NovDec
+var L5_NovDec = selectedL5.filter(ee.Filter.dayOfYear(301,360))
+    .median();
+var indexL5_NDMI_NovDec = L5_NovDec.expression(L5_NDMI).rename('NDMI_NovDec');
+//print('indexL5_NDMI_NovDec', indexL5_NDMI_NovDec);
+
+// Create a composite image with all the two-month average EVI composites and clip the area of analysis
+// according to your AOI (the AOI is defined by the geometry variable, which can be created/modified using
+// the map window below)
+//print('step 3', indexL5_NDMI_NovDec);
+var L5_NDMI_composite = ee.Image([indexL5_NDMI_JanFeb, indexL5_NDMI_MarApr, indexL5_NDMI_MayJun, indexL5_NDMI_JulAug, indexL5_NDMI_SepOct, indexL5_NDMI_NovDec])
+    .clip(geometry);
+
+
+var L5_NDMI_std = L5_NDMI_composite.reduce(ee.Reducer.stdDev()).rename('L5_NDMI_std');
+
+var L5_NDMI_Dry = L5Dry.expression(L5_NDMI).rename('L5_NDMI_dry');
+
+// Add the newly created layer to the map window. In this case we have created a RGB composite joining
+// the bi-month EVI average values from July-August (R), March-April (G) and January-February (B) 
+Map.addLayer(L5_NDMI_composite, {bands: ["NDMI_JulAug","NDMI_MarApr","NDMI_JanFeb"], min: -2, max: 2}, AOI+" NDMI Seasonal Composite");
+
+// Export the Expression image (with all bi-month EVI averages) to your Google drive
+// Export.image.toDrive({
+//   image: L5_NDMI_composite,
+//   description: AOI+"_NDMI_Seasonal_Composite",
+//   scale: 30,
+//   maxPixels: 1e9,
+//   region: geometry
+// });
+
+//    ----oo PCA of seasinal changes withinh NDMI oo-----
+
+// Get some information about the input to be used later.
+var scale = 10;
+var bandNames = L5_NDMI_composite.bandNames();
+
+// Mean center the data to enable a faster covariance reducer
+// and an SD stretch of the principal components.
+var meanDict = L5_NDMI_composite.reduceRegion({
+    reducer: ee.Reducer.mean(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+});
+var means = ee.Image.constant(meanDict.values(bandNames));
+var centered = L5_NDMI_composite.subtract(means);
+
+// This helper function returns a list of new band names.
+var getNewBandNames = function(prefix) {
+  var seq = ee.List.sequence(1, bandNames.length());
+  return seq.map(function(b) {
+    return ee.String(prefix).cat(ee.Number(b).int());
+  });
+};
+
+// This function accepts mean centered imagery, a scale and
+// a region in which to perform the analysis.  It returns the
+// Principal Components (PC) in the region as a new image.
+var getPrincipalComponents = function(centered, scale, geometry) {
+  // Collapse the bands of the image into a 1D array per pixel.
+  var arrays = centered.toArray();
+
+  // Compute the covariance of the bands within the region.
+  var covar = arrays.reduceRegion({
+    reducer: ee.Reducer.centeredCovariance(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+  });
+
+  // Get the 'array' covariance result and cast to an array.
+  // This represents the band-to-band covariance within the region.
+  var covarArray = ee.Array(covar.get('array'));
+
+  // Perform an eigen analysis and slice apart the values and vectors.
+  var eigens = covarArray.eigen();
+
+  // This is a P-length vector of Eigenvalues.
+  var eigenValues = eigens.slice(1, 0, 1);
+  // This is a PxP matrix with eigenvectors in rows.
+  var eigenVectors = eigens.slice(1, 1);
+
+  // Convert the array image to 2D arrays for matrix computations.
+  var arrayImage = arrays.toArray(1);
+
+  // Left multiply the image array by the matrix of eigenvectors.
+  var principalComponents = ee.Image(eigenVectors).matrixMultiply(arrayImage);
+
+  // Turn the square roots of the Eigenvalues into a P-band image.
+  var sdImage = ee.Image(eigenValues.sqrt())
+    .arrayProject([0]).arrayFlatten([getNewBandNames('sd')]);
+
+  // Turn the PCs into a P-band image, normalized by SD.
+  return principalComponents
+    // Throw out an an unneeded dimension, [[]] -> [].
+    .arrayProject([0])
+    // Make the one band array image a multi-band image, [] -> image.
+    .arrayFlatten([getNewBandNames('L5_NDMI_pc')])
+    // Normalize the PCs by their SDs.
+    .divide(sdImage);
+};
+
+// Get the PCs at the specified scale and in the specified region
+var L5_NDMI_seasonal_changes_PCA = getPrincipalComponents(centered, scale, geometry);
+
+// Display a composite with PCs 3,2,1 for visualisation
+// Map.addLayer(L5_NDMI_seasonal_changes_PCA,{},'L5_pca_NDMI');
+
+////////////////////////
+
+//                ------------- ooo -------------
+// Normalized Difference Water Index (NDWI) 
+//
+// Gao, Bo-cai. 1996. ‘NDWI—A Normalized Difference Water Index for Remote Sensing of Vegetation Liquid Water from Space’. Remote Sensing of Environment 58 (3): 257–66. https://doi.org/10.1016/S0034-4257(96)00067-3.
+// Ji, Lei, Li Zhang, and Bruce Wylie. 2009. ‘Analysis of Dynamic Thresholds for the Normalized Difference Water Index’. Photogrammetric Engineering & Remote Sensing 75 (11): 1307–17. https://doi.org/10.14358/PERS.75.11.1307.
+// 
+
+var L5_NDWI = 'float ((b("L5_B2") - b("L5_B5")) / (b("L5_B2") + b("L5_B5")))';
+
+// Seasonal Multitemporal Composite
+
+var L5_JanFeb = selectedL5.filter(ee.Filter.dayOfYear(1,60))
+    .median();
+var indexL5_NDWI_JanFeb = L5_JanFeb.expression(L5_NDWI).rename('NDWI_JanFeb');
+//print('indexL5_NDWI_JanFeb', indexL5_NDWI_JanFeb);
+// 1 L5_MarApr
+var L5_MarApr = selectedL5.filter(ee.Filter.dayOfYear(61,120))
+    .median();
+var indexL5_NDWI_MarApr = L5_MarApr.expression(L5_NDWI).rename('NDWI_MarApr');
+//print('indexL5_NDWI_MarApr', indexL5_NDWI_MarApr);
+
+//2 L5_MayJun    
+var L5_MayJun = selectedL5.filter(ee.Filter.dayOfYear(121,180))
+    .median();
+var indexL5_NDWI_MayJun = L5_MayJun.expression(L5_NDWI).rename('NDWI_MayJun');
+//print('indexL5_NDWI_MayJun', indexL5_NDWI_MayJun);
+
+//3 L5_JulAug    
+var L5_JulAug = selectedL5.filter(ee.Filter.dayOfYear(181,240))
+    .median();
+var indexL5_NDWI_JulAug = L5_JulAug.expression(L5_NDWI).rename('NDWI_JulAug');
+//print('indexL5_NDWI_JulAug', indexL5_NDWI_JulAug);
+
+//4 L5_SepOct   
+var L5_SepOct = selectedL5.filter(ee.Filter.dayOfYear(241,300))
+    .median();
+
+var indexL5_NDWI_SepOct = L5_SepOct.expression(L5_NDWI).rename('NDWI_SepOct');
+//print('indexL5_NDWI_SepOct', indexL5_NDWI_SepOct);
+
+//5 L5_NovDec
+var L5_NovDec = selectedL5.filter(ee.Filter.dayOfYear(301,360))
+    .median();
+var indexL5_NDWI_NovDec = L5_NovDec.expression(L5_NDWI).rename('NDWI_NovDec');
+//print('indexL5_NDWI_NovDec', indexL5_NDWI_NovDec);
+
+// Create a composite image with all the two-month average EVI composites and clip the area of analysis
+// according to your AOI (the AOI is defined by the geometry variable, which can be created/modified using
+// the map window below)
+//print('step 3', indexL5_NDWI_NovDec);
+var L5_NDWI_composite = ee.Image([indexL5_NDWI_JanFeb, indexL5_NDWI_MarApr, indexL5_NDWI_MayJun, indexL5_NDWI_JulAug, indexL5_NDWI_SepOct, indexL5_NDWI_NovDec])
+    .clip(geometry);
+
+
+var L5_NDWI_std = L5_NDWI_composite.reduce(ee.Reducer.stdDev()).rename('L5_NDWI_std');
+
+var L5_NDWI_Dry = L5Dry.expression(L5_NDWI).rename('L5_NDWI_dry');
+
+// Add the newly created layer to the map window. In this case we have created a RGB composite joining
+// the bi-month EVI average values from July-August (R), March-April (G) and January-February (B) 
+Map.addLayer(L5_NDWI_composite, {bands: ["NDWI_JulAug","NDWI_MarApr","NDWI_JanFeb"], min: -2, max: 2}, AOI+" NDWI Seasonal Composite");
+
+// Export the Expression image (with all bi-month EVI averages) to your Google drive
+// Export.image.toDrive({
+//   image: L5_NDWI_composite,
+//   description: AOI+"_NDWI_Seasonal_Composite",
+//   scale: 30,
+//   maxPixels: 1e9,
+//   region: geometry
+// });
+
+
+//    ----oo PCA of seasinal changes withinh NDWI oo-----
+
+// Get some information about the input to be used later.
+var scale = 10;
+var bandNames = L5_NDWI_composite.bandNames();
+
+// Mean center the data to enable a faster covariance reducer
+// and an SD stretch of the principal components.
+var meanDict = L5_NDWI_composite.reduceRegion({
+    reducer: ee.Reducer.mean(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+});
+var means = ee.Image.constant(meanDict.values(bandNames));
+var centered = L5_NDWI_composite.subtract(means);
+
+// This helper function returns a list of new band names.
+var getNewBandNames = function(prefix) {
+  var seq = ee.List.sequence(1, bandNames.length());
+  return seq.map(function(b) {
+    return ee.String(prefix).cat(ee.Number(b).int());
+  });
+};
+
+// This function accepts mean centered imagery, a scale and
+// a region in which to perform the analysis.  It returns the
+// Principal Components (PC) in the region as a new image.
+var getPrincipalComponents = function(centered, scale, geometry) {
+  // Collapse the bands of the image into a 1D array per pixel.
+  var arrays = centered.toArray();
+
+  // Compute the covariance of the bands within the region.
+  var covar = arrays.reduceRegion({
+    reducer: ee.Reducer.centeredCovariance(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+  });
+
+  // Get the 'array' covariance result and cast to an array.
+  // This represents the band-to-band covariance within the region.
+  var covarArray = ee.Array(covar.get('array'));
+
+  // Perform an eigen analysis and slice apart the values and vectors.
+  var eigens = covarArray.eigen();
+
+  // This is a P-length vector of Eigenvalues.
+  var eigenValues = eigens.slice(1, 0, 1);
+  // This is a PxP matrix with eigenvectors in rows.
+  var eigenVectors = eigens.slice(1, 1);
+
+  // Convert the array image to 2D arrays for matrix computations.
+  var arrayImage = arrays.toArray(1);
+
+  // Left multiply the image array by the matrix of eigenvectors.
+  var principalComponents = ee.Image(eigenVectors).matrixMultiply(arrayImage);
+
+  // Turn the square roots of the Eigenvalues into a P-band image.
+  var sdImage = ee.Image(eigenValues.sqrt())
+    .arrayProject([0]).arrayFlatten([getNewBandNames('sd')]);
+
+  // Turn the PCs into a P-band image, normalized by SD.
+  return principalComponents
+    // Throw out an an unneeded dimension, [[]] -> [].
+    .arrayProject([0])
+    // Make the one band array image a multi-band image, [] -> image.
+    .arrayFlatten([getNewBandNames('L5_NDWI_pc')])
+    // Normalize the PCs by their SDs.
+    .divide(sdImage);
+};
+
+// Get the PCs at the specified scale and in the specified region
+var L5_NDWI_seasonal_changes_PCA = getPrincipalComponents(centered, scale, geometry);
+
+// Display a composite with PCs 2,4,1 for visualisation
+// Please change the visualization paramenters to combine different bands
+// and/or reproduce the band combinations of the paper's figures
+// NOTE! The exported image incorporates all Principal Components
+Map.addLayer(L5_NDWI_seasonal_changes_PCA,{},'L5_pca_NDWI');
+
+
+//                ------------- ooo -------------
+// Sentinel-1
+// Specify the starting date for filtering the images
+var S1filterImStart = '2011-01-01'
+var S1filterImEnd =  '2020-12-01'
+// Specify the pecific modern enviromental conditions for dry and wet season
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Seasonal changes in S1 VV backscatter
+//                -------------- ooo ------------
+
+// Despeckling filter
+function applySmoothingFilter(image) {
+  var kernel = ee.Kernel.square(3);  // Neighborhood size
+  var mean = image.reduceNeighborhood({
+    reducer: ee.Reducer.mean(),
+    kernel: kernel
+  });
+  var variance = image.reduceNeighborhood({
+    reducer: ee.Reducer.variance(),
+    kernel: kernel
+  });
+
+  var sigma = variance.sqrt();
+  var noiseVariance = sigma.pow(2).min(variance);
+  var band = image.expression(
+    'B2 + (B1 - B2) * (1 - ENL / (ENL + SIGMA))', {
+      'B1': image,
+      'B2': mean,
+      'SIGMA': sigma,
+      'ENL': 3 
+    });
+
+  return band.rename(image.bandNames())
+  .copyProperties(image, image.propertyNames());
+}
+
+ // Filter Sentinel 1 images
+var S1 = ee.ImageCollection('COPERNICUS/S1_GRD')
+        .filterBounds(geometry)
+        .filterDate(S1filterImStart, S1filterImEnd)
+        .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VV'))
+        .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
+        .filter(ee.Filter.eq('orbitProperties_pass', 'ASCENDING'))  // Choose orbit direction
+        .filter(ee.Filter.eq('instrumentMode', 'IW'))
+        .map(function(image) {
+          var edge = image.lt(-30.0);
+          var maskedImage = image.mask().and(edge.not());
+          return image.updateMask(maskedImage);
+        });
+
+// Apply the refined Lee filter to each image in the collection
+var selectedS1 = S1.map(applySmoothingFilter);
+
+/// S1 Dry
+var S1Dry1 = selectedS1.filter(ee.Filter.dayOfYear(drystart1,dryfinish1));
+var S1Dry2 = selectedS1.filter(ee.Filter.dayOfYear(drystart2,dryfinish2));
+var S1Dry_col =  ee.ImageCollection(S1Dry1.merge(S1Dry2)).filterBounds(geometry);
+var S1DryVH = S1Dry_col.select('VH').mean().rename('S1_VH');
+var S1DryVV = S1Dry_col.select('VV').mean().rename('S1_VV');
+
+print('Sentinel 1 images during Dry months:', S1Dry_col);
+
+
+//print('Composite of wet VV and VH ', s1wetcomp);
+var S1_VH_JanFeb = selectedS1.filter(ee.Filter.dayOfYear(1,60))
+    .select('VH').mean();
+var indexS1_VH_JanFeb = S1_VH_JanFeb.rename('S1_VH_VH_JanFeb');
+//print('indexS1_VH_JanFeb', indexS1_VH_JanFeb);
+// 1 S1_VH_MarApr
+var S1_VH_MarApr = selectedS1.filter(ee.Filter.dayOfYear(61,120))
+    .select('VH').mean();
+var indexS1_VH_MarApr = S1_VH_MarApr.rename('S1_VH_VH_MarApr');
+//print('indexS1_VH_MarApr', indexS1_VH_MarApr);
+
+//2 S1_VH_MayJun    
+var S1_VH_MayJun = selectedS1.filter(ee.Filter.dayOfYear(121,180))
+    .select('VH').mean();
+var indexS1_VH_MayJun = S1_VH_MayJun.rename('S1_VH_VH_MayJun');
+//print('indexS1_VH_MayJun', indexS1_VH_MayJun);
+
+//3 S1_VH_JulAug    
+var S1_VH_JulAug = selectedS1.filter(ee.Filter.dayOfYear(181,240))
+    .select('VH').mean();
+var indexS1_VH_JulAug = S1_VH_JulAug.rename('S1_VH_VH_JulAug');
+//print('indexS1_VH_JulAug', indexS1_VH_JulAug);
+
+//4 S1_VH_SepOct   
+var S1_VH_SepOct = selectedS1.filter(ee.Filter.dayOfYear(241,300))
+    .select('VH').mean();
+
+var indexS1_VH_SepOct = S1_VH_SepOct.rename('S1_VH_VH_SepOct');
+//print('indexS1_VH_SepOct', indexS1_VH_SepOct);
+
+//5 S1_VH_NovDec
+var S1_VH_NovDec = selectedS1.filter(ee.Filter.dayOfYear(301,360))
+    .select('VH').mean();
+var indexS1_VH_NovDec = S1_VH_NovDec.rename('S1_VH_VH_NovDec');
+//print('indexS1_VH_NovDec', indexS1_VH_NovDec);
+
+// Create a composite image with all the two-month average EVI composites and clip the area of analysis
+// according to your AOI (the AOI is defined by the geometry variable, which can be created/modified using
+// the map window below)
+//print('step 3', indexS1_VH_NovDec);
+var S1_VH_composite = ee.Image([indexS1_VH_JanFeb, indexS1_VH_MarApr, indexS1_VH_MayJun, indexS1_VH_JulAug, indexS1_VH_SepOct, indexS1_VH_NovDec])
+    .clip(geometry);
+
+// Rename the composite bands so they can be easier to interpret
+//var comp_sel = composite.select(
+//    ['constant', 'constant_1', 'constant_2', 'constant_3', 'constant_4', 'constant_5'], // old names
+//    ['JanFeb', 'MarApr', 'MayJun', 'JulAug', 'SepOct', 'NovDec'] // new names
+//);
+
+// Add the newly created layer to the map window. In this case we have created a RGB composite joining
+// the bi-month EVI average values from July-August (R), March-April (G) and January-February (B) 
+Map.addLayer(S1_VH_composite, {bands: ["S1_VH_VH_JulAug","S1_VH_VH_MarApr","S1_VH_VH_JanFeb"], min: -20, max: -10}, AOI+'_S1_VH_composite');
+
+
+var S1_VH_std = S1_VH_composite.reduce(ee.Reducer.stdDev()).rename('S1_VH_std');
+
+
+// Export the Expression image (with all bi-month EVI averages) to your Google drive
+// Export.image.toDrive({
+//   image: S1_VH_composite,
+//   description: AOI+'_S1_VH_composite',
+//   scale: 30,
+//   maxPixels: 1e9,
+//   region: geometry
+// });
+///
+
+//    ----oo PCA of seasonal changes of S1 VH backscatter oo-----
+
+// Get some information about the input to be used later.
+var scale = 10;
+var bandNames = S1_VH_composite.bandNames();
+
+// mean center the data to enable a faster covariance reducer
+// and an SD stretch of the principal components.
+var meanDict = S1_VH_composite.reduceRegion({
+    reducer: ee.Reducer.mean(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+});
+var means = ee.Image.constant(meanDict.values(bandNames));
+var centered = S1_VH_composite.subtract(means);
+
+// This helper function returns a list of new band names.
+var getNewBandNames = function(prefix) {
+  var seq = ee.List.sequence(1, bandNames.length());
+  return seq.map(function(b) {
+    return ee.String(prefix).cat(ee.Number(b).int());
+  });
+};
+
+// This function accepts mean centered imagery, a scale and
+// a region in which to perform the analysis.  It returns the
+// Principal Components (PC) in the region as a new image.
+var getPrincipalComponents = function(centered, scale, geometry) {
+  // Collapse the bands of the image into a 1D array per pixel.
+  var arrays = centered.toArray();
+
+  // Compute the covariance of the bands within the region.
+  var covar = arrays.reduceRegion({
+    reducer: ee.Reducer.centeredCovariance(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+  });
+
+  // Get the 'array' covariance result and cast to an array.
+  // This represents the band-to-band covariance within the region.
+  var covarArray = ee.Array(covar.get('array'));
+
+  // Perform an eigen analysis and slice apart the values and vectors.
+  var eigens = covarArray.eigen();
+
+  // This is a P-length vector of Eigenvalues.
+  var eigenValues = eigens.slice(1, 0, 1);
+  // This is a PxP matrix with eigenvectors in rows.
+  var eigenVectors = eigens.slice(1, 1);
+
+  // Convert the array image to 2D arrays for matrix computations.
+  var arrayImage = arrays.toArray(1);
+
+  // Left multiply the image array by the matrix of eigenvectors.
+  var principalComponents = ee.Image(eigenVectors).matrixMultiply(arrayImage);
+
+  // Turn the square roots of the Eigenvalues into a P-band image.
+  var sdImage = ee.Image(eigenValues.sqrt())
+    .arrayProject([0]).arrayFlatten([getNewBandNames('sd')]);
+
+  // Turn the PCs into a P-band image, normalized by SD.
+  return principalComponents
+    // Throw out an an unneeded dimension, [[]] -> [].
+    .arrayProject([0])
+    // Make the one band array image a multi-band image, [] -> image.
+    .arrayFlatten([getNewBandNames('S1_VH_STM_pc')])
+    // Normalize the PCs by their SDs.
+    .divide(sdImage);
+};
+
+// Get the PCs at the specified scale and in the specified region
+var S1_VH_seasonal_changes_PCA = getPrincipalComponents(centered, scale, geometry);
+
+// Display a composite with PCs 2,4,1 for visualisation
+// Please change the visualization paramenters to combine different bands
+// and/or reproduce the band combinations of the paper's figures
+// NOTE! The exported image incorporates all Principal Components
+Map.addLayer(S1_VH_seasonal_changes_PCA,{bands: ["S1_VH_STM_pc1"], min: -2, max: 2},'pca_S1_VH_STM');
+
+// Export.image.toDrive({
+//   image: S1_VH_seasonal_changes_PCA.select("S1_VH_STM_pc1"),
+//   description: AOI+'_pca_S1_VH_STM',
+//   scale: 10,
+//   maxPixels: 9e12, 
+//   region: geometry,
+// });
+
+///
+
+//print('Composite of wet VV and VV ', s1wetcomp);
+var S1_VV_JanFeb = selectedS1.filter(ee.Filter.dayOfYear(1,60))
+    .select('VV').mean();
+var indexS1_VV_JanFeb = S1_VV_JanFeb.rename('S1_VV_JanFeb');
+//print('indexS1_VV_JanFeb', indexS1_VV_JanFeb);
+// 1 S1_VV_MarApr
+var S1_VV_MarApr = selectedS1.filter(ee.Filter.dayOfYear(61,120))
+    .select('VV').mean();
+var indexS1_VV_MarApr = S1_VV_MarApr.rename('S1_VV_MarApr');
+//print('indexS1_VV_MarApr', indexS1_VV_MarApr);
+
+//2 S1_VV_MayJun    
+var S1_VV_MayJun = selectedS1.filter(ee.Filter.dayOfYear(121,180))
+    .select('VV').mean();
+var indexS1_VV_MayJun = S1_VV_MayJun.rename('S1_VV_MayJun');
+//print('indexS1_VV_MayJun', indexS1_VV_MayJun);
+
+//3 S1_VV_JulAug    
+var S1_VV_JulAug = selectedS1.filter(ee.Filter.dayOfYear(181,240))
+    .select('VV').mean();
+var indexS1_VV_JulAug = S1_VV_JulAug.rename('S1_VV_JulAug');
+//print('indexS1_VV_JulAug', indexS1_VV_JulAug);
+
+//4 S1_VV_SepOct   
+var S1_VV_SepOct = selectedS1.filter(ee.Filter.dayOfYear(241,300))
+    .select('VV').mean();
+
+var indexS1_VV_SepOct = S1_VV_SepOct.rename('S1_VV_SepOct');
+//print('indexS1_VV_SepOct', indexS1_VV_SepOct);
+
+//5 S1_VV_NovDec
+var S1_VV_NovDec = selectedS1.filter(ee.Filter.dayOfYear(301,360))
+    .select('VV').mean();
+var indexS1_VV_NovDec = S1_VV_NovDec.rename('S1_VV_NovDec');
+//print('indexS1_VV_NovDec', indexS1_VV_NovDec);
+
+// Create a composite image with all the two-month average EVI composites and clip the area of analysis
+// according to your AOI (the AOI is defined by the geometry variable, which can be created/modified using
+// the map window below)
+//print('step 3', indexS1_VV_NovDec);
+var S1_VV_composite = ee.Image([indexS1_VV_JanFeb, indexS1_VV_MarApr, indexS1_VV_MayJun, indexS1_VV_JulAug, indexS1_VV_SepOct, indexS1_VV_NovDec])
+    .clip(geometry);
+
+// Rename the composite bands so they can be easier to interpret
+//var comp_sel = composite.select(
+//    ['constant', 'constant_1', 'constant_2', 'constant_3', 'constant_4', 'constant_5'], // old names
+//    ['JanFeb', 'MarApr', 'MayJun', 'JulAug', 'SepOct', 'NovDec'] // new names
+//);
+
+// Add the newly created layer to the map window. In this case we have created a RGB composite joining
+// the bi-month EVI average values from July-August (R), March-April (G) and January-February (B) 
+Map.addLayer(S1_VV_composite, {bands: ["S1_VV_JulAug","S1_VV_MarApr","S1_VV_JanFeb"], min: -20, max: -10}, AOI+'_S1_VV_composite');
+
+
+var S1_VV_std = S1_VV_composite.reduce(ee.Reducer.stdDev()).rename('S1_VV_std');
+
+
+// Export the Expression image (with all bi-month EVI averages) to your Google drive
+// Export.image.toDrive({
+//   image: S1_VV_composite,
+//   description: AOI+'_S1_VV_composite',
+//   scale: 30,
+//   maxPixels: 1e9,
+//   region: geometry
+// });
+///
+
+//    ----oo PCA of seasonal changes of S1 VV backscatter oo-----
+
+// Get some information about the input to be used later.
+var scale = 10;
+var bandNames = S1_VV_composite.bandNames();
+
+// mean center the data to enable a faster covariance reducer
+// and an SD stretch of the principal components.
+var meanDict = S1_VV_composite.reduceRegion({
+    reducer: ee.Reducer.mean(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+});
+var means = ee.Image.constant(meanDict.values(bandNames));
+var centered = S1_VV_composite.subtract(means);
+
+// This helper function returns a list of new band names.
+var getNewBandNames = function(prefix) {
+  var seq = ee.List.sequence(1, bandNames.length());
+  return seq.map(function(b) {
+    return ee.String(prefix).cat(ee.Number(b).int());
+  });
+};
+
+// This function accepts mean centered imagery, a scale and
+// a region in which to perform the analysis.  It returns the
+// Principal Components (PC) in the region as a new image.
+var getPrincipalComponents = function(centered, scale, geometry) {
+  // Collapse the bands of the image into a 1D array per pixel.
+  var arrays = centered.toArray();
+
+  // Compute the covariance of the bands within the region.
+  var covar = arrays.reduceRegion({
+    reducer: ee.Reducer.centeredCovariance(),
+    geometry: geometry,
+    scale: scale,
+    maxPixels: 9e12
+  });
+
+  // Get the 'array' covariance result and cast to an array.
+  // This represents the band-to-band covariance within the region.
+  var covarArray = ee.Array(covar.get('array'));
+
+  // Perform an eigen analysis and slice apart the values and vectors.
+  var eigens = covarArray.eigen();
+
+  // This is a P-length vector of Eigenvalues.
+  var eigenValues = eigens.slice(1, 0, 1);
+  // This is a PxP matrix with eigenvectors in rows.
+  var eigenVectors = eigens.slice(1, 1);
+
+  // Convert the array image to 2D arrays for matrix computations.
+  var arrayImage = arrays.toArray(1);
+
+  // Left multiply the image array by the matrix of eigenvectors.
+  var principalComponents = ee.Image(eigenVectors).matrixMultiply(arrayImage);
+
+  // Turn the square roots of the Eigenvalues into a P-band image.
+  var sdImage = ee.Image(eigenValues.sqrt())
+    .arrayProject([0]).arrayFlatten([getNewBandNames('sd')]);
+
+  // Turn the PCs into a P-band image, normalized by SD.
+  return principalComponents
+    // Throw out an an unneeded dimension, [[]] -> [].
+    .arrayProject([0])
+    // Make the one band array image a multi-band image, [] -> image.
+    .arrayFlatten([getNewBandNames('S1_VV_STM_pc')])
+    // Normalize the PCs by their SDs.
+    .divide(sdImage);
+};
+
+// Get the PCs at the specified scale and in the specified region
+var S1_VV_seasonal_changes_PCA = getPrincipalComponents(centered, scale, geometry);
+
+// Display a composite with PCs 2,4,1 for visualisation
+// Please change the visualization paramenters to combine different bands
+// and/or reproduce the band combinations of the paper's figures
+// NOTE! The exported image incorporates all Principal Components
+Map.addLayer(S1_VV_seasonal_changes_PCA,{bands: ["S1_VV_STM_pc1"], min: -2, max: 2},'pca_S1_VV_STM');
+
+// Export.image.toDrive({
+//   image: S1_VV_seasonal_changes_PCA.select("S1_VV_STM_pc1"),
+//   description: AOI+'_pca_S1_VV_STM',
+//   scale: 10,
+//   maxPixels: 9e12, 
+//   region: geometry,
+// });
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/// Sentinel-2
+
+// This section uses the Sentinel-2 QA band to cloud mask
+// the collection.  The Sentinel-2 cloud flags are less
+// selective, so the collection is also pre-filtered by the
+// CLOUDY_PIXEL_PERCENTAGE flag, to use only relatively
+// cloud-free granule.
+
+// Function to mask clouds using the Sentinel-2 QA band.
+function maskS2clouds(image) {
+  var qa = image.select('QA60');
+
+  // Bits 10 and 11 are clouds and cirrus, respectively.
+  var cloudBitMask = 1 << 10;
+  var cirrusBitMask = 1 << 11;
+
+  // Both flags should be set to zero, indicating clear conditions.
+  var mask = qa.bitwiseAnd(cloudBitMask).eq(0)
+      .and(qa.bitwiseAnd(cirrusBitMask).eq(0));
+
+  return image.updateMask(mask).divide(10000)
+    .copyProperties(image, image.propertyNames());
+}
+
+//Map the function over the selected period of time and take the median. 
+//Note that Sentinel 2 is an ongoing mission and the dates can be updated to use all the data available.
+// Load Sentinel-2 TOA reflectance data.
+var collection = ee.ImageCollection("COPERNICUS/S2_HARMONIZED")
+    .filterDate(S1filterImStart, S1filterImEnd)
+    // Pre-filter to get less cloudy granules.
+    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE',10))
+    .filterBounds(geometry)
+    .map(maskS2clouds);
+
+var selectedS2 = collection.map(function(image) {
+  return image.select(
+    ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B8A', 'B9', 'B10', 'B11', 'B12']
+  ).rename(
+    ['S2_B1', 'S2_B2', 'S2_B3', 'S2_B4', 'S2_B5', 'S2_B6', 'S2_B7', 'S2_B8', 'S2_B8A', 'S2_B9', 'S2_B10', 'S2_B11', 'S2_B12']
+  );
+});
+
+///////////
+// Dry S2 composite 
+/// S2 Dry
+var S2Dry1 = selectedS2.filter(ee.Filter.dayOfYear(drystart1,dryfinish1));
+var S2Dry2 = selectedS2.filter(ee.Filter.dayOfYear(drystart2,dryfinish2));
+var S2Dry_col =  ee.ImageCollection(S2Dry1.merge(S2Dry2)).filterBounds(geometry);
+var S2Dry = S2Dry_col.mean();
+
+/// Misra Soil Brightness Index (MSBI) ////////
+// Misra, PN. 1977. ‘Kauth-Thomas Brightness and Greenness Axes’. Contract Nasa, 23–46.
+/// 0.406*3+0.600*4+0.645*6+0.243*9
+/// https://www.indexdatabase.de/db/i-single.php?id=570
+//var MSBI = 'float (0.406*b("SR_B4")+0.600*b("SR_B5")+0.645*b("ST_B6")+0.243*b("SR_B7"))';
+
+var S2_MSBI = 'float (0.406*b("S2_B3")+0.600*b("S2_B4")+0.645*b("S2_B6")+0.243*b("S2_B9"))';
+var S2_MSBI_Dry = S2Dry.expression(S2_MSBI).rename('S2_MSBI_Dry');
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/// MSRM
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// JavaScript code to be implemented in Google Earth Engine(c) developed by H.A. Orengo
+// to accompany the paper:
+//
+// Orengo, H.A. and Petrie, C.A. 2018. 'Multi-Scale Relief Model (MSRM): a new algorithm
+// for the analysis of subtle topographic change in digital elevation models'
+// published in Earth Surface Processes and Landforms, 43(6): 1361-1369.
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+var Repproj = SMTVI_seasonal_changes_PCA.projection();
+var geometry = geometry_xprt.buffer({'distance': 6000});
+
+// Below are the sources imported from GEE repository. The user could add her/his own
+// asssets or other sources available in GEE repository.
+var SRTM30 = ee.Image('USGS/SRTMGL1_003');
+var SRTM90 = ee.Image('CGIAR/SRTM90_V4');
+var ALOS30 = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE');
+var GLO30_ = ee.ImageCollection('projects/sat-io/open-datasets/GLO-30');
+var GLO30 = GLO30_.mosaic().setDefaultProjection('EPSG:3857',null,30);
+var fabdem_ = ee.ImageCollection("projects/sat-io/open-datasets/FABDEM");
+var fabdem = fabdem_.mosaic().setDefaultProjection('EPSG:3857',null,30);
+var NASADEM_ = ee.Image('NASA/NASADEM_HGT/001');
+var NASADEM = NASADEM_.select('elevation');
+
+///// DEM - MSRM
+
+var ExpressPrompt = prompt('Select DEM from the list: SRTM90, SRTM30, ALOS30, GLO30, fabdem, NASADEM', 'TANDEM');
+
+if (ExpressPrompt == 'SRTM90') {var DEM = SRTM90; var expressName = 'SRTM90'}
+if (ExpressPrompt == 'SRTM30') {var DEM = SRTM30; var expressName = 'SRTM30'}
+if (ExpressPrompt == 'ALOS30') {var DEM = ALOS30; var expressName = 'ALOS30'}
+if (ExpressPrompt == 'GLO30') {var DEM = GLO30; var expressName = 'GLO30'}
+if (ExpressPrompt == 'fabdem') {var DEM = fabdem; var expressName = 'fabdem'}
+if (ExpressPrompt == 'TANDEM') {var DEM = TANDEM; var expressName = 'TanDEM-X'}
+if (ExpressPrompt == 'NASADEM') {var DEM = NASADEM; var expressName = 'NASADEM'}
+if (ExpressPrompt == 'EM3D') {var DEM = EM3D; var expressName = 'EM3D'}
+
+// Please, select the source you want to use from the list of variables above (ALOS30
+// selected by default).
+var DSM = DEM // Substitute for one of the previously defined DSMs or use your own
+  .clip(geometry); // The DSM is clipped using the extent of the AOI defined above.
+
+
+
+var rr = Math.round((DSM.projection().nominalScale().getInfo())*1000) / 1000;
+
+/// List of maximum values for MSRM
+var rr_min = 0;
+var rr_max = 60;
+var rr_max2 = 120;
+var rr_max3 = 240;
+var rr_max4 = 480;
+var rr_max5 = 960;
+var rr_max6 = 1920;
+var rr_max7 = 3840;
+
+var fmax_values = [rr_max, rr_max2, rr_max3, rr_max4, rr_max5, rr_max6, rr_max7];
+var fminPrmpt_values = [rr_min, rr_min, rr_min, rr_min, rr_min, rr_min, rr_min];
+
+var x_values = [2, 2, 2, 2, 2, 2, 2];
+
+var MSRM_images = [];
+
+//
+
+// Function to calculate MSRM for given parameters
+function calculateMSRM(fmax, fminPrmpt, x) {
+  var rr = Math.round((DSM.projection().nominalScale().getInfo())*1000) / 1000;
+  var fmin = fminPrmpt <= rr ? rr : fminPrmpt;
+  
+  var i = Math.floor(Math.pow((fmin - rr) / (2 * rr), 1 / x));
+  var n = Math.ceil(Math.pow((fmax - rr) / (2 * rr), 1 / x));
+  
+  var arrayLP = [];
+  for (var ndx = i; ndx <= n; ndx++) {
+    var boxcar = ee.Kernel.square({
+      radius: Math.pow(ndx, x), units: 'pixels', normalize: true});
+    var LP = DSM.convolve(boxcar);
+    arrayLP.push(LP);
+  }
+  
+  var compLP = ee.Image([arrayLP]);
+  var arrayRM = [];
+  
+  for (var ndx2 = 0; ndx2 < n - i; ndx2++) {
+    var RM = compLP.expression('((b1 - b2))', {
+        'b1': compLP.select(ndx2),
+        'b2': compLP.select(ndx2 + 1)
+    });
+    arrayRM.push(RM);
+  }
+  
+  var MSRMraw = ee.Image([arrayRM])
+    .reduce(ee.Reducer.mean())
+    .clip(geometry_xprt);
+  
+  var MSRM = ee.Image(0).expression(
+      'round(img * 1000) / 1000', {
+        'img': MSRMraw
+      });
+  
+  var mean = MSRM.reduceRegion({
+        reducer: ee.Reducer.mean(),
+        geometry: geometry,
+        scale: rr * 4,
+        bestEffort: true,
+        maxPixels: 1e9,
+        tileScale: 10
+    })
+    .get('mean');
+  
+  var sigma = MSRM.reduceRegion({
+        reducer: ee.Reducer.stdDev(),
+        geometry: geometry,
+        scale: rr * 4,
+        bestEffort: true,
+        maxPixels: 1e9,
+        tileScale: 10
+    })
+    .get('mean');
+  
+  var MSRMstretch = ee.Image(0).expression(
+      '((img - mean) / (sigma * 2)) + 0.5', {
+        'img': MSRM,
+        'mean': ee.Image.constant(mean),
+        'sigma': ee.Image.constant(sigma)
+      });
+  
+  MSRM_images.push(MSRMstretch);
+  return MSRMstretch;
+}
+
+for (var idx = 0; idx < fmax_values.length; idx++) {
+  var msrm_image = calculateMSRM(fmax_values[idx], fminPrmpt_values[idx], x_values[idx]);
+  Map.addLayer(msrm_image,
+    {palette: "000000,2207ff,00fff3,03ff00,fbff00,ffc800,ff0000,e300ff,ffffff",
+    opacity: 0.4}, 'MSRM_' + fminPrmpt_values[idx] + '_' + fmax_values[idx]);
+}
+
+// Combine the MSRM images into a single multiband image
+var multibandMSRM = ee.Image.cat(MSRM_images).rename(['MSRM_1', 'MSRM_2', 'MSRM_3', 'MSRM_4', 'MSRM_5', 'MSRM_6', 'MSRM_7']);
+// print(multibandMSRM, 'Multiband MSRM');
+
+
+// Add the multiband MSRM to the map view
+Map.addLayer(multibandMSRM,
+  {bands: ['MSRM_1', 'MSRM_2', 'MSRM_3'], min: -1, max: 1,
+  opacity: 0.4}, 'Multiband MSRM');
+
+Export.image.toDrive({
+  image: multibandMSRM,
+  description: AOI + '_Multiband_MSRM_' + expressName,
+  scale: rr,
+  maxPixels: 9e12, 
+  region: geometry_xprt,
+});
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//      ----0000 Composite 0000----
+
+//print(s2_bands_Dry);
+
+// Rename the composite bands so they can be easier to interpret
+var final_composite = ee.Image ([SMTVI_seasonal_changes_PCA, L5_SMTVI_std, L5_EVI_dry, L5Dry, L5_NDMI_seasonal_changes_PCA, L5_NDMI_std, L5_NDMI_Dry, L5_NDWI_seasonal_changes_PCA, L5_NDWI_std, L5_NDWI_Dry, S2Dry, S2_MSBI_Dry, S1_VH_seasonal_changes_PCA, S1_VH_std, S1DryVH, S1_VV_seasonal_changes_PCA, S1_VV_std, S1DryVV, multibandMSRM])
+.reproject({
+    crs: 'EPSG:3395',
+    scale: 20
+  })
+  .float().clip(geometry);
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//      ----0000 Machine learning process 0000----
+
+// Select the bands of the composite to be employed during the process. This is hardly necessary in
+// this case as all bands will be used, but it can be useful when testing the performance of different
+// 53 multiband composites
+//var bands = ['S2_B1', 'S2_B2', 'S2_B3', 'S2_B4', 'S2_B5', 'S2_B6', 'S2_B7', 'S2_B8', 'S2_B8A', 'S2_B9', 'S2_B10', 'S2_B11', 'S2_B12', 'S2_MSBI_Dry', 'S1_VH_STM_pc1', 'S1_VH_STM_pc2', 'S1_VH_STM_pc3', 'S1_VH_std', 'S1_VH', 'S1_VV_STM_pc1', 'S1_VV_STM_pc2', 'S1_VV_STM_pc3', 'S1_VV_std', 'S1_VV', 'L5_B1', 'L5_B2', 'L5_B3', 'L5_B4','L5_B5','L5_B6', 'L5_B7', 'L5_SMTVI_pc1', 'L5_SMTVI_pc2', 'L5_SMTVI_pc3', 'L5_EVI_dry', 'L5_SMTVI_std', 'L5_NDMI_pc1', 'L5_NDMI_pc2', 'L5_NDMI_pc3', 'L5_NDMI_std', 'L5_NDMI_dry', 'L5_NDWI_pc1', 'L5_NDWI_pc2', 'L5_NDWI_pc3', 'L5_NDWI_std', 'L5_NDWI_dry', 'MSRM_1', 'MSRM_2','MSRM_3','MSRM_4','MSRM_5','MSRM_6','MSRM_7'];
+
+// 48: Without : B10, 'L5_B6', 'S1_VH_STM_pc3', 'L5_NDWI_pc3', 'L5_SMTVI_pc3',  'L5_NDMI_pc3',
+var bands = ['S2_B1', 'S2_B2', 'S2_B3', 'S2_B4', 'S2_B5', 'S2_B6', 'S2_B7', 'S2_B8', 'S2_B8A', 'S2_B9', 'S2_B11', 'S2_B12', 'S2_MSBI_Dry', 'S1_VH_STM_pc1', 'S1_VH_STM_pc2', 'S1_VH_std', 'S1_VH', 'S1_VV_STM_pc1', 'S1_VV_STM_pc2', 'S1_VV_STM_pc3', 'S1_VV_std', 'S1_VV', 'L5_B1', 'L5_B2', 'L5_B3', 'L5_B4','L5_B5', 'L5_B7', 'L5_SMTVI_pc1', 'L5_SMTVI_pc2', 'L5_EVI_dry', 'L5_SMTVI_std', 'L5_NDMI_pc1', 'L5_NDMI_pc2',  'L5_NDMI_pc3', 'L5_NDMI_std', 'L5_NDMI_dry', 'L5_NDWI_pc1', 'L5_NDWI_pc2', 'L5_NDWI_std', 'L5_NDWI_dry', 'MSRM_1', 'MSRM_2','MSRM_3','MSRM_4','MSRM_5','MSRM_6','MSRM_7'];
+
+// 36: Without: B10, 'L5_B6', 'S1_VH_STM_pc3', 'L5_NDWI_pc3', 'L5_SMTVI_pc3',  'L5_NDMI_pc3',
+//var bands = ['S2_B1', 'S2_B2', 'S2_B3', 'S2_B4', 'S2_B5', 'S2_B6', 'S2_B7', 'S2_B8', 'S2_B8A', 'S2_B11', 'S2_B12', 'S2_MSBI_Dry',  'S1_VV_STM_pc1', 'S1_VV_STM_pc3', 'S1_VV_std', 'L5_B1', 'L5_B2', 'L5_B3', 'L5_B4','L5_B5', 'L5_B7', 'L5_EVI_dry',  'L5_NDMI_pc2', 'L5_NDMI_std', 'L5_NDMI_dry', 'L5_NDWI_pc1', 'L5_NDWI_std', 'L5_NDWI_dry', 'MSRM_2','MSRM_3','MSRM_4','MSRM_5','MSRM_6','MSRM_7'];
+
+//var bands = [];
+//print(bands);
+// Add the multiband MSRM to the map view
+
+var newimage_ = final_composite.select(bands);
+
+var newimage = newimage_.reproject({
+    crs: 'EPSG:3395',
+    scale: scale
+  })
+  .float();
+  
+Map.addLayer(newimage,
+  {bands: ['L5_SMTVI_pc1', 'L5_BSI_pc1', 'MSRM_1'], min: -1, max: 1,
+  opacity: 1.0}, 'bands');
+  
+// Export the SMTVI image (with all bi-month CSI averages) to your Google drive
+ Export.image.toDrive({
+   image: newimage_,
+   description: AOI+'_selected_L5_S2_S1_MSRM_PCA_N48',
+   crs: 'EPSG:4326',
+   scale: 20,
+   maxPixels: 1e9,
+   region: geometry_xprt
+ });
+
+
+print('Number of bands in the dataset raster:', bands.length);
+
+
+
+

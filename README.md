@@ -14,6 +14,42 @@ The results highlight both the challenges and promise of deep learning in archae
 
 ## Workflow
 
+The detailed workflow is described in the publication. A brief description of the procedure can be descibed as follows:
+
+### Train the model
+#### Dataset
+*The code used in this stage is available using following [link](https://github.com/nazarb/2025_levees_DL/tree/main/Dataset)*
+- **A** - raster data - Calculate the multisource rasters using published Google Earth Engine [code](https://github.com/nazarb/2025_levees_DL/blob/main/Dataset/Dataset_creation_GEE_code)
+- **B** - annotations - Rasterize the levee network created for the purpose of this work available in https://doi.org/10.58132/MGOHM8. Clip and adjust pixels in A and B.
+- Create tiles using A and B
+- Perform augmentations using [albumentations](https://github.com/albumentations-team/albumentations)
+- Create JSON file with structure of the dataset
+#### Train and validate the model 
+*The code used in this stage is available using following [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)*
+
+*There are separate sets od code for training Unet, Attention Unet and Swin UNETR models*
+- Unet
+- Attention Unet
+- Swin UNETR
+  
+#### Predict
+*The code used in this stage is available using following [link](https://github.com/nazarb/2025_levees_DL/tree/main/Predict)*
+
+The code use for prediction consist of several steps
+- Calculate the multisource rasters using published Google Earth Engine [code](https://github.com/nazarb/2025_levees_DL/blob/main/Dataset/Dataset_creation_GEE_code)
+- Run the detection code
+	- 	Select raster
+	- 	Convert to NPY
+	- 	Predict levees
+	- 	Convert predictions to TIF and merge them
+    
+#### Post-processing
+*The code used in this stage is available using following [link](https://github.com/nazarb/2025_levees_DL/tree/main/Post_processing)*
+
+Post-processing include:
+- filter by size
+- closing
+
 
 ## Citation
 

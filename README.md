@@ -9,3 +9,23 @@ In construction
 
 
 ## Workflow
+
+
+## Citation
+
+```bash
+
+
+@article{bulawkaLeveragingBigMultitemporal01,
+	title = {Leveraging big multitemporal multisource satellite data and artificial intelligence for the detection of complex and invisible features - the case of extensive irrigation mapping},
+	volume = {},
+	doi = {},
+	number = {},
+	journal = {GIScience \& Remote Sensing},
+	author = {Buławka, Nazarij and Orengo, Hector A. and Lumbreras Ruiz, Felipe and Berganzo-Besga, Iban and Gupta, Ekta},
+	pages = {},
+}
+
+
+```
+

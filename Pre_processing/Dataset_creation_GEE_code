@@ -124,7 +124,6 @@ Map.addLayer(selectedL5.median().clip(geometry), visualization, 'True Color (321
 // Enhanced Vegetation Index  (abbrv. EVI)
 // General formula: 2.5 * (NIR - RED) / ((NIR + 6*RED - 7.5*BLUE) + 1)
 // URL https://www.indexdatabase.de/db/si-single.php?sensor_id=96&rsindex_id=16 
-// https://custom-scripts.sentinel-hub.com/custom-scripts/sentinel-2/NBR22/script.js
 
 var SMTVI = 'float (2.5 * (b("L5_B4") - b("L5_B3")) / ((b("L5_B4") + 6.0 * b("L5_B3") - 7.5 * b("L5_B1")) + 1.0))';
 

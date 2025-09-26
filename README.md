@@ -57,12 +57,18 @@ The code for creating the composite consist of several parts
 - MSRM 7 - Multi-Scale Relief Model (MSRM) - fmin 0, fmax 3840, x 2 [[7]](#7)[[2]](#2)
 
 #### Train and validate the model 
-*The code used in this stage is available using following [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)*
 
-*There are separate sets od code for training Unet, Attention Unet and Swin UNETR models*
-- Unet
-- Attention Unet
-- Swin UNETR
+The research utilizes the Unet, Attention Unet and Swin UNETR developed by [MONAI](https://github.com/Project-MONAI/MONAI)*
+
+The final version of the Swin UNETR model is available [here](https://github.com/nazarb/2025_levees_DL/tree/main/Swin_UNETR)
+
+
+*The selection phase of the training included separate sets od code for training Unet, Attention Unet and Swin UNETR models*
+- Unet [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)*
+- Attention Unet [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)*
+- Swin UNETR  [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)*
+
+
   
 #### Predict
 *The code used in this stage is available using following [link](https://github.com/nazarb/2025_levees_DL/tree/main/Predict)*

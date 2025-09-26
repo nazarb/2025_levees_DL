@@ -64,10 +64,9 @@ The final version of the Swin UNETR model is available [here](https://github.com
 
 
 *The selection phase of the training included separate sets od code for training Unet, Attention Unet and Swin UNETR models*
-- Unet [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)*
-- Attention Unet [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)*
-- Swin UNETR  [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)*
-
+- Unet [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)
+- Attention Unet [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)
+- Swin UNETR  [link](https://github.com/nazarb/2025_levees_DL/tree/main/Model)
 
   
 #### Predict

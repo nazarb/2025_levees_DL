@@ -138,7 +138,7 @@ Analysis of Dynamic Thresholds for the Normalized Difference Water Index.
 Photogrammetric Engineering & Remote Sensing 75(11): 1307–17. 
 https://doi.org/10.14358/PERS.75.11.1307.
 
-[<a id="7">[7]</a> 
+<a id="7">[7]</a> 
 Orengo, Hector A., and Cameron A. Petrie. (2018). 
 Multi‐scale Relief Model (MSRM): A New Algorithm for the Visualization of Subtle Topographic Change of Variable Size in Digital Elevation Models/
 Earth Surface Processes and Landforms, 43(6), 1361–69. 

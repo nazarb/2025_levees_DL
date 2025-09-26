@@ -1,4 +1,4 @@
-<img width="65" height="21" alt="image" src="https://github.com/user-attachments/assets/3f69dff8-d617-4399-8344-19e273368346" /># Swin UNETR levee detection model
+# Swin UNETR levee detection model
 
 Buławka, Nazarij, Hector A. Orengo, Felipe Lumbreras Ruiz, Iban Berganzo-Besga and Ekta Gupta. n.d. ‘Leveraging Big Multitemporal Multisource Satellite Data and Artificial Intelligence for the Detection of Complex and Invisible Features - the Case of Extensive Irrigation Mapping’.
 

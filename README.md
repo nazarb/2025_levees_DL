@@ -98,7 +98,7 @@ Post-processing include:
 	volume = {},
 	doi = {},
 	number = {},
-	journal = {GIScience & Remote Sensing},
+	journal = {},
 	author = {Buławka, Nazarij and Orengo, Hector A. and Lumbreras Ruiz, Felipe and Berganzo-Besga, Iban and Gupta, Ekta},
 	pages = {},
 }

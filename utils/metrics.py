@@ -11,10 +11,20 @@ import pandas as pd
 from shapely.ops import unary_union
 from shapely.geometry import LineString, MultiLineString
 
+__all__ = [
+    "compare_vectors",
+    "compare_linear_vectors",
+    "compare_rasters",
+    "segmentize_line",
+    "compare_line_segments",
+    "add_vector_comparison_to_map",
+    "display_vector_comparison",
+]
+
 
 def compare_vectors(
-    reference_path: str,
-    predicted_path: str,
+    reference_path: Union[str, gpd.GeoDataFrame],
+    predicted_path: Union[str, gpd.GeoDataFrame],
     buffer_distance: float,
     output_path: Optional[str] = None,
     crs: Optional[Union[str, int]] = None
@@ -32,12 +42,13 @@ def compare_vectors(
     - 2: False Negative (FN) - buffered reference area not covered by prediction
     
     Args:
-        reference_path: Path to the reference (ground truth) vector file.
-        predicted_path: Path to the predicted vector file.
+        reference_path: Path to the reference (ground truth) vector file, or a GeoDataFrame.
+        predicted_path: Path to the predicted vector file, or a GeoDataFrame.
         buffer_distance: Buffer distance in CRS units (meters for projected CRS).
             Applied to reference geometry for tolerance matching.
         output_path: Optional path for comparison vector output. If None, generates
-            path based on predicted_path with "_comparison_buf{buffer_distance}" suffix.
+            path based on predicted_path when it is a file path; otherwise defaults to
+            "comparison_buf{buffer_distance}.gpkg" when predicted_path is a GeoDataFrame.
         crs: Optional CRS to reproject both datasets to before comparison.
             Recommended to use a projected CRS (e.g., EPSG:3857) for accurate
             area calculations. If None, uses reference CRS.
@@ -64,9 +75,16 @@ def compare_vectors(
         ... )
         >>> print(f"IoU: {metrics['iou']:.4f}")
     """
-    # Load vector files
-    ref = gpd.read_file(reference_path)
-    pred = gpd.read_file(predicted_path)
+    # Load vector data (file path or GeoDataFrame)
+    if isinstance(reference_path, gpd.GeoDataFrame):
+        ref = reference_path.copy()
+    else:
+        ref = gpd.read_file(reference_path)
+    
+    if isinstance(predicted_path, gpd.GeoDataFrame):
+        pred = predicted_path.copy()
+    else:
+        pred = gpd.read_file(predicted_path)
     
     if len(ref) == 0 or ref.geometry.is_empty.all():
         raise ValueError("Reference vector file is empty or has no valid geometry.")
@@ -141,8 +159,11 @@ def compare_vectors(
     
     # Determine output path
     if output_path is None:
-        pred_path = Path(predicted_path)
-        output_path = str(pred_path.parent / f"{pred_path.stem}_comparison_buf{buffer_distance}.gpkg")
+        if isinstance(predicted_path, str):
+            pred_path = Path(predicted_path)
+            output_path = str(pred_path.parent / f"{pred_path.stem}_comparison_buf{buffer_distance}.gpkg")
+        else:
+            output_path = f"comparison_buf{buffer_distance}.gpkg"
     
     # Handle fid column conflict for GPKG
     if 'fid' in comparison_gdf.columns:
@@ -160,7 +181,130 @@ def compare_vectors(
         "fp_area": float(fp_area),
         "fn_area": float(fn_area)
     }
+
+
+def compare_linear_vectors(
+    reference_path: Union[str, gpd.GeoDataFrame],
+    predicted_path: Union[str, gpd.GeoDataFrame],
+    buffer_distance: float,
+    output_path: Optional[str] = None,
+    crs: Optional[Union[str, int]] = None
+) -> Dict[str, float]:
+    """
+    Compare linear features (e.g. levees, channels) by buffering BOTH reference
+    and predicted lines, then computing overlap-based precision, recall, F1, IoU.
     
+    Unlike compare_vectors (which buffers only the reference), this buffers both
+    input geometries so area-based metrics are meaningful for line data.
+    
+    The comparison output contains polygons with the following classification:
+    - 1: True Positive (TP) - overlap of both buffers
+    - -1: False Positive (FP) - predicted buffer outside reference buffer
+    - 2: False Negative (FN) - reference buffer outside predicted buffer
+    
+    Args:
+        reference_path: Path to reference vector file, or a GeoDataFrame.
+        predicted_path: Path to predicted vector file, or a GeoDataFrame.
+        buffer_distance: Buffer distance in CRS units (meters for EPSG:3857).
+        output_path: Optional path for comparison vector output.
+        crs: Optional CRS to reproject to (e.g., 3857 for meters).
+    
+    Returns:
+        Dictionary with precision, recall, f1_score, iou, tp_area, fp_area, fn_area.
+    
+    Example:
+        >>> metrics = compare_linear_vectors(
+        ...     reference_path="ground_truth.gpkg",
+        ...     predicted_path="predicted_edges.gpkg",
+        ...     buffer_distance=900,
+        ...     crs=3857
+        ... )
+    """
+    # Load vector data (file path or GeoDataFrame)
+    if isinstance(reference_path, gpd.GeoDataFrame):
+        ref = reference_path.copy()
+    else:
+        ref = gpd.read_file(reference_path)
+    
+    if isinstance(predicted_path, gpd.GeoDataFrame):
+        pred = predicted_path.copy()
+    else:
+        pred = gpd.read_file(predicted_path)
+    
+    if len(ref) == 0 or ref.geometry.is_empty.all():
+        raise ValueError("Reference vector is empty or has no valid geometry.")
+    if len(pred) == 0 or pred.geometry.is_empty.all():
+        raise ValueError("Predicted vector is empty or has no valid geometry.")
+    
+    target_crs = crs if crs else ref.crs
+    ref = ref.to_crs(target_crs)
+    pred = pred.to_crs(target_crs)
+    
+    ref_union = unary_union(ref.geometry)
+    pred_union = unary_union(pred.geometry)
+    
+    # Buffer BOTH reference and predicted (critical for linear data)
+    buffered_ref = ref_union.buffer(buffer_distance)
+    buffered_pred = pred_union.buffer(buffer_distance)
+    
+    # Overlap-based areas
+    tp_geom = buffered_ref.intersection(buffered_pred)
+    fp_geom = buffered_pred.difference(buffered_ref)
+    fn_geom = buffered_ref.difference(buffered_pred)
+    
+    tp_area = tp_geom.area if not tp_geom.is_empty else 0
+    fp_area = fp_geom.area if not fp_geom.is_empty else 0
+    fn_area = fn_geom.area if not fn_geom.is_empty else 0
+    
+    precision = tp_area / (tp_area + fp_area) if (tp_area + fp_area) > 0 else 0
+    recall = tp_area / (tp_area + fn_area) if (tp_area + fn_area) > 0 else 0
+    f1_score = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+    iou = tp_area / (tp_area + fp_area + fn_area) if (tp_area + fp_area + fn_area) > 0 else 0
+    
+    print(f"\n--- Evaluation Metrics (Linear, buffer both) ---")
+    print(f"Buffer distance: {buffer_distance} units")
+    print(f"Precision:  {precision:.4f}")
+    print(f"Recall:     {recall:.4f}")
+    print(f"F1 Score:   {f1_score:.4f}")
+    print(f"IoU:        {iou:.4f}")
+    print(f"\nAreas (sq units):")
+    print(f"  TP: {tp_area:,.2f}")
+    print(f"  FP: {fp_area:,.2f}")
+    print(f"  FN: {fn_area:,.2f}")
+    
+    comparison_records = []
+    if not tp_geom.is_empty:
+        comparison_records.append({"geometry": tp_geom, "class": 1, "label": "TP", "area": tp_area})
+    if not fp_geom.is_empty:
+        comparison_records.append({"geometry": fp_geom, "class": -1, "label": "FP", "area": fp_area})
+    if not fn_geom.is_empty:
+        comparison_records.append({"geometry": fn_geom, "class": 2, "label": "FN", "area": fn_area})
+    
+    comparison_gdf = gpd.GeoDataFrame(comparison_records, crs=target_crs)
+    
+    if output_path is None:
+        if isinstance(predicted_path, str):
+            pred_path = Path(predicted_path)
+            output_path = str(pred_path.parent / f"{pred_path.stem}_linear_comp_buf{buffer_distance}.gpkg")
+        else:
+            output_path = f"linear_comparison_buf{buffer_distance}.gpkg"
+    
+    if 'fid' in comparison_gdf.columns:
+        comparison_gdf = comparison_gdf.rename(columns={'fid': 'orig_fid'})
+    
+    comparison_gdf.to_file(output_path, driver="GPKG")
+    print(f"\nComparison saved to: {output_path}")
+    
+    return {
+        "precision": float(precision),
+        "recall": float(recall),
+        "f1_score": float(f1_score),
+        "iou": float(iou),
+        "tp_area": float(tp_area),
+        "fp_area": float(fp_area),
+        "fn_area": float(fn_area)
+    }
+
 
 def compare_rasters(
     reference_tif: str,
@@ -551,3 +695,217 @@ def compare_line_segments(
         "fp_count": int(fp_count),
         "fn_count": int(fn_count)
     }
+
+
+def add_vector_comparison_to_map(
+    m,
+    vector_path: Union[str, gpd.GeoDataFrame],
+    class_column: str = "class",
+    layer_name: str = "Vector Comparison"
+):
+    """
+    Add vector comparison data to an existing leafmap Map.
+    
+    Parameters
+    ----------
+    m : leafmap.Map
+        Existing leafmap Map object to add layers to
+    vector_path : str or GeoDataFrame
+        Path to vector file or GeoDataFrame containing comparison results
+    class_column : str, default "class"
+        Column name containing classification values (1, -1, 2)
+    layer_name : str, default "Vector Comparison"
+        Base name for the vector layers
+    
+    Returns
+    -------
+    leafmap.Map
+        The map object with added layers
+    """
+    # Load vector data
+    if isinstance(vector_path, gpd.GeoDataFrame):
+        gdf = vector_path.copy()
+    else:
+        gdf = gpd.read_file(vector_path)
+    
+    if len(gdf) == 0:
+        raise ValueError("Vector data is empty.")
+    
+    # Ensure we have the class column
+    if class_column not in gdf.columns:
+        raise ValueError(f"Column '{class_column}' not found in vector data.")
+    
+    # Reproject to WGS84 for display if needed
+    if gdf.crs and gdf.crs.to_epsg() != 4326:
+        gdf_display = gdf.to_crs(epsg=4326)
+    else:
+        gdf_display = gdf.copy()
+    
+    # Color mapping
+    color_map = {
+        1: "#0dff0d",   # TP - Green
+        -1: "#e5350e",  # FP - Red
+        2: "#729bff",   # FN - Blue
+    }
+    
+    # Add each class as a separate layer for better control
+    for class_val, color in color_map.items():
+        subset = gdf_display[gdf_display[class_column] == class_val]
+        if len(subset) > 0:
+            # Convert to GeoJSON for leafmap
+            geojson_data = subset.to_json()
+            
+            label_map = {1: "True Positives", -1: "False Positives", 2: "False Negatives"}
+            layer_label = f"{layer_name} - {label_map[class_val]}"
+            
+            m.add_geojson(
+                geojson_data,
+                layer_name=layer_label,
+                style={"color": color, "weight": 3, "opacity": 0.8}
+            )
+    
+    return m
+
+
+def display_vector_comparison(
+    vector_path: Union[str, gpd.GeoDataFrame],
+    center: Optional[list] = None,
+    zoom: Optional[int] = None,
+    class_column: str = "class",
+    layer_name: str = "Vector Comparison",
+    auto_center: bool = True,
+    map_obj: Optional[object] = None
+):
+    """
+    Display vector comparison data using leafmap with color-coded TP/FP/FN classification.
+    
+    Creates an interactive map showing line segments colored by their classification:
+    - TP (True Positives): Green
+    - FP (False Positives): Red  
+    - FN (False Negatives): Blue
+    
+    Parameters
+    ----------
+    vector_path : str or GeoDataFrame
+        Path to vector file (GPKG, GeoJSON, etc.) or GeoDataFrame containing comparison results.
+        Must have a 'class' column with values: 1 (TP), -1 (FP), 2 (FN)
+    center : list, optional
+        Map center as [latitude, longitude]. If None and auto_center=True, 
+        calculates from data bounds.
+    zoom : int, optional
+        Initial zoom level. If None and auto_center=True, calculates from data bounds.
+    class_column : str, default "class"
+        Column name containing classification values (1, -1, 2)
+    layer_name : str, default "Vector Comparison"
+        Name for the vector layer in the map
+    auto_center : bool, default True
+        If True, automatically center and zoom to data bounds
+    map_obj : leafmap.Map, optional
+        Existing map object to add layers to. If provided, center/zoom are ignored.
+    
+    Returns
+    -------
+    leafmap.Map
+        Interactive map object
+    
+    Example
+    -------
+    >>> from utils import compare_line_segments, display_vector_comparison
+    >>> 
+    >>> # Run comparison
+    >>> metrics = compare_line_segments(
+    ...     reference_path="ref.gpkg",
+    ...     predicted_path="pred.gpkg",
+    ...     segment_length=250,
+    ...     buffer_distance=250,
+    ...     output_path="comparison.gpkg"
+    ... )
+    >>> 
+    >>> # Display results
+    >>> m = display_vector_comparison(
+    ...     vector_path="comparison.gpkg",
+    ...     center=[31.52806, 65.24722],
+    ...     zoom=14
+    ... )
+    >>> m
+    """
+    try:
+        import leafmap
+    except ImportError:
+        raise ImportError(
+            "leafmap is required for visualization. Install with: pip install leafmap"
+        )
+    
+    # Use existing map if provided
+    if map_obj is not None:
+        return add_vector_comparison_to_map(map_obj, vector_path, class_column, layer_name)
+    
+    # Load vector data for bounds calculation
+    if isinstance(vector_path, gpd.GeoDataFrame):
+        gdf = vector_path.copy()
+    else:
+        gdf = gpd.read_file(vector_path)
+    
+    if len(gdf) == 0:
+        raise ValueError("Vector data is empty.")
+    
+    # Ensure we have the class column
+    if class_column not in gdf.columns:
+        raise ValueError(f"Column '{class_column}' not found in vector data.")
+    
+    # Reproject to WGS84 for display if needed
+    if gdf.crs and gdf.crs.to_epsg() != 4326:
+        gdf_display = gdf.to_crs(epsg=4326)
+    else:
+        gdf_display = gdf.copy()
+    
+    # Calculate center and zoom if auto_center
+    if auto_center and (center is None or zoom is None):
+        bounds = gdf_display.total_bounds  # [minx, miny, maxx, maxy]
+        center_lat = (bounds[1] + bounds[3]) / 2
+        center_lon = (bounds[0] + bounds[2]) / 2
+        center = [center_lat, center_lon]
+        
+        # Estimate zoom based on bounds
+        if zoom is None:
+            lat_range = bounds[3] - bounds[1]
+            lon_range = bounds[2] - bounds[0]
+            max_range = max(lat_range, lon_range)
+            
+            # Rough zoom estimation
+            if max_range > 10:
+                zoom = 8
+            elif max_range > 5:
+                zoom = 9
+            elif max_range > 1:
+                zoom = 11
+            elif max_range > 0.5:
+                zoom = 12
+            elif max_range > 0.1:
+                zoom = 13
+            else:
+                zoom = 14
+    
+    # Initialize map
+    if center is None:
+        center = [0, 0]
+    if zoom is None:
+        zoom = 10
+    
+    m = leafmap.Map(center=center, zoom=zoom)
+    
+    # Add vector layers
+    add_vector_comparison_to_map(m, vector_path, class_column, layer_name)
+    
+    # Add legend
+    legend_dict = {
+        "True Positives (1)": "#0dff0d",
+        "False Positives (-1)": "#e5350e",
+        "False Negatives (2)": "#729bff",
+    }
+    m.add_legend(title="Vector Comparison", legend_dict=legend_dict)
+    
+    # Add layer control
+    m.add_layer_control()
+    
+    return m

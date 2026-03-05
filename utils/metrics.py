@@ -10,7 +10,128 @@ from pathlib import Path
 import geopandas as gpd
 from shapely.ops import unary_union
 
-
+def compare_linear_vectors(
+    reference_path: Union[str, gpd.GeoDataFrame],
+    predicted_path: Union[str, gpd.GeoDataFrame],
+    buffer_distance: float,
+    output_path: Optional[str] = None,
+    crs: Optional[Union[str, int]] = None
+) -> Dict[str, float]:
+    """
+    Compare linear features (e.g. levees, channels) by buffering BOTH reference
+    and predicted lines, then computing overlap-based precision, recall, F1, IoU.
+    
+    Unlike compare_vectors (which buffers only the reference), this buffers both
+    input geometries so area-based metrics are meaningful for line data.
+    
+    The comparison output contains polygons with the following classification:
+    - 1: True Positive (TP) - overlap of both buffers
+    - -1: False Positive (FP) - predicted buffer outside reference buffer
+    - 2: False Negative (FN) - reference buffer outside predicted buffer
+    
+    Args:
+        reference_path: Path to reference vector file, or a GeoDataFrame.
+        predicted_path: Path to predicted vector file, or a GeoDataFrame.
+        buffer_distance: Buffer distance in CRS units (meters for EPSG:3857).
+        output_path: Optional path for comparison vector output.
+        crs: Optional CRS to reproject to (e.g., 3857 for meters).
+    
+    Returns:
+        Dictionary with precision, recall, f1_score, iou, tp_area, fp_area, fn_area.
+    
+    Example:
+        >>> metrics = compare_linear_vectors(
+        ...     reference_path="ground_truth.gpkg",
+        ...     predicted_path="predicted_edges.gpkg",
+        ...     buffer_distance=900,
+        ...     crs=3857
+        ... )
+    """
+    # Load vector data (file path or GeoDataFrame)
+    if isinstance(reference_path, gpd.GeoDataFrame):
+        ref = reference_path.copy()
+    else:
+        ref = gpd.read_file(reference_path)
+    
+    if isinstance(predicted_path, gpd.GeoDataFrame):
+        pred = predicted_path.copy()
+    else:
+        pred = gpd.read_file(predicted_path)
+    
+    if len(ref) == 0 or ref.geometry.is_empty.all():
+        raise ValueError("Reference vector is empty or has no valid geometry.")
+    if len(pred) == 0 or pred.geometry.is_empty.all():
+        raise ValueError("Predicted vector is empty or has no valid geometry.")
+    
+    target_crs = crs if crs else ref.crs
+    ref = ref.to_crs(target_crs)
+    pred = pred.to_crs(target_crs)
+    
+    ref_union = unary_union(ref.geometry)
+    pred_union = unary_union(pred.geometry)
+    
+    # Buffer BOTH reference and predicted (critical for linear data)
+    buffered_ref = ref_union.buffer(buffer_distance)
+    buffered_pred = pred_union.buffer(buffer_distance)
+    
+    # Overlap-based areas
+    tp_geom = buffered_ref.intersection(buffered_pred)
+    fp_geom = buffered_pred.difference(buffered_ref)
+    fn_geom = buffered_ref.difference(buffered_pred)
+    
+    tp_area = tp_geom.area if not tp_geom.is_empty else 0
+    fp_area = fp_geom.area if not fp_geom.is_empty else 0
+    fn_area = fn_geom.area if not fn_geom.is_empty else 0
+    
+    precision = tp_area / (tp_area + fp_area) if (tp_area + fp_area) > 0 else 0
+    recall = tp_area / (tp_area + fn_area) if (tp_area + fn_area) > 0 else 0
+    f1_score = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+    iou = tp_area / (tp_area + fp_area + fn_area) if (tp_area + fp_area + fn_area) > 0 else 0
+    
+    print(f"\n--- Evaluation Metrics (Linear, buffer both) ---")
+    print(f"Buffer distance: {buffer_distance} units")
+    print(f"Precision:  {precision:.4f}")
+    print(f"Recall:     {recall:.4f}")
+    print(f"F1 Score:   {f1_score:.4f}")
+    print(f"IoU:        {iou:.4f}")
+    print(f"\nAreas (sq units):")
+    print(f"  TP: {tp_area:,.2f}")
+    print(f"  FP: {fp_area:,.2f}")
+    print(f"  FN: {fn_area:,.2f}")
+    
+    comparison_records = []
+    if not tp_geom.is_empty:
+        comparison_records.append({"geometry": tp_geom, "class": 1, "label": "TP", "area": tp_area})
+    if not fp_geom.is_empty:
+        comparison_records.append({"geometry": fp_geom, "class": -1, "label": "FP", "area": fp_area})
+    if not fn_geom.is_empty:
+        comparison_records.append({"geometry": fn_geom, "class": 2, "label": "FN", "area": fn_area})
+    
+    comparison_gdf = gpd.GeoDataFrame(comparison_records, crs=target_crs)
+    
+    if output_path is None:
+        if isinstance(predicted_path, str):
+            pred_path = Path(predicted_path)
+            output_path = str(pred_path.parent / f"{pred_path.stem}_linear_comp_buf{buffer_distance}.gpkg")
+        else:
+            output_path = f"linear_comparison_buf{buffer_distance}.gpkg"
+    
+    if 'fid' in comparison_gdf.columns:
+        comparison_gdf = comparison_gdf.rename(columns={'fid': 'orig_fid'})
+    
+    comparison_gdf.to_file(output_path, driver="GPKG")
+    print(f"\nComparison saved to: {output_path}")
+    
+    return {
+        "precision": float(precision),
+        "recall": float(recall),
+        "f1_score": float(f1_score),
+        "iou": float(iou),
+        "tp_area": float(tp_area),
+        "fp_area": float(fp_area),
+        "fn_area": float(fn_area)
+    }
+    
 def compare_vectors(
     reference_path: Union[str, gpd.GeoDataFrame],
     predicted_path: Union[str, gpd.GeoDataFrame],
@@ -358,3 +479,4 @@ def compare_rasters(
         "f1_score": float(f1_score),
         "iou": float(iou)
     }
+

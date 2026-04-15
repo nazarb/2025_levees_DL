@@ -14,7 +14,7 @@ The results highlight both the challenges and promise of deep learning in archae
 
 ## Levee detection demo 
 
-[Open demo](https://github.com/nazarb/Levees_DL/blob/main/Levee_detection_Swin_UNETR_demo_2026.ipynb)
+[Open demo](https://github.com/nazarb/Levees_DL/blob/main/Levee_detection_Swin_UNETR_demo_2016.ipynb)
 
 Demo of the model includes:
 

@@ -92,7 +92,7 @@ The [code](https://github.com/nazarb/Levees_DL/tree/main/Predict) used for predi
 	volume = {},
 	doi = {},
 	number = {},
-	journal = {},
+	journal = {Archaeological Prospection},
 	author = {Buławka, Nazarij and Orengo, Hector A. and Lumbreras Ruiz, Felipe and Berganzo-Besga, Iban and Gupta, Ekta},
 	pages = {},
 }

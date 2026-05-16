@@ -4,7 +4,7 @@ Buławka, N., Orengo, H. A., Lumbreras Ruiz, F., Berganzo-Besga, I., & Gupta, E.
 
 
 
-*In publication*
+*Accepted for publication*
 
 ## Abstract
 

@@ -1,6 +1,8 @@
 # Leveraging Big Multitemporal Multisource Satellite Data and Artificial Intelligence for the Detection of Complex and Invisible Features - the Case of Extensive Irrigation Mapping: Swin UNETR levee detection model
 
-Buławka, Nazarij, Hector A. Orengo, Felipe Lumbreras Ruiz, Iban Berganzo-Besga and Ekta Gupta. n.d. ‘Leveraging Big Multitemporal Multisource Satellite Data and Artificial Intelligence for the Detection of Complex and Invisible Features - the Case of Extensive Irrigation Mapping’.
+Buławka, N., Orengo, H. A., Lumbreras Ruiz, F., Berganzo-Besga, I., & Gupta, E. (2026). Leveraging big multitemporal multisource satellite data and artificial intelligence for the detection of complex and invisible features—The case of extensive irrigation mapping. Archaeological Prospection, 2158411.
+
+
 
 *In publication*
 

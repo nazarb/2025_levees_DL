@@ -100,6 +100,7 @@ The [code](https://github.com/nazarb/Levees_DL/tree/main/Predict) used for predi
 
 ```
 
+[![DOI](https://zenodo.org/badge/1058817372.svg)](https://doi.org/10.5281/zenodo.20242540)
 
 
 

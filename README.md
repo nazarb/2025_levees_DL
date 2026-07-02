@@ -1,10 +1,8 @@
 # Leveraging Big Multitemporal Multisource Satellite Data and Artificial Intelligence for the Detection of Complex and Invisible Features - the Case of Extensive Irrigation Mapping: Swin UNETR levee detection model
 
-Buławka, N., Orengo, H. A., Lumbreras Ruiz, F., Berganzo-Besga, I., & Gupta, E. (2026). Leveraging big multitemporal multisource satellite data and artificial intelligence for the detection of complex and invisible features—The case of extensive irrigation mapping. Archaeological Prospection, 2158411.
+Buławka, N., Orengo, H. A., Ruiz, F. L., Berganzo‐Besga, I., & Gupta, E. (2026). Leveraging Big Multitemporal Multisource Satellite Data and Artificial Intelligence for the Detection of Complex and Invisible Features: The Case of Extensive Irrigation Mapping. Archaeological Prospection, arp.70053. https://doi.org/10.1002/arp.70053
 
 
-
-*Accepted for publication*
 
 ## Abstract
 
@@ -87,15 +85,22 @@ The [code](https://github.com/nazarb/Levees_DL/tree/main/Predict) used for predi
 ```bash
 
 
-@article{bulawkaLeveragingBigMultitemporal01,
-	title = {Leveraging big multitemporal multisource satellite data and artificial intelligence for the detection of complex and invisible features - the case of extensive irrigation mapping},
-	volume = {},
-	doi = {},
-	number = {},
+
+@article{bulawkaLeveragingBigMultitemporal2026,
+	title = {Leveraging {Big} {Multitemporal} {Multisource} {Satellite} {Data} and {Artificial} {Intelligence} for the {Detection} of {Complex} and {Invisible} {Features}: {The} {Case} of {Extensive} {Irrigation} {Mapping}},
+	issn = {1075-2196, 1099-0763},
+	shorttitle = {Leveraging {Big} {Multitemporal} {Multisource} {Satellite} {Data} and {Artificial} {Intelligence} for the {Detection} of {Complex} and {Invisible} {Features}},
+	url = {https://onlinelibrary.wiley.com/doi/10.1002/arp.70053},
+	doi = {10.1002/arp.70053},
+	language = {en},
+	urldate = {2026-06-18},
 	journal = {Archaeological Prospection},
-	author = {Buławka, Nazarij and Orengo, Hector A. and Lumbreras Ruiz, Felipe and Berganzo-Besga, Iban and Gupta, Ekta},
-	pages = {},
+	author = {Buławka, Nazarij and Orengo, Hector A. and Ruiz, Felipe Lumbreras and Berganzo‐Besga, Iban and Gupta, Ekta},
+	month = jun,
+	year = {2026},
+	pages = {arp.70053},
 }
+
 
 
 ```
